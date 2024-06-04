@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Tags</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb/dist/pouchdb.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h2>Cadastro de Tags</h2>
-        <form>
+        <form id="tagForm">
             <div class="form-group">
                 <label for="icon">Ícone</label>
                 <input type="text" id="icon" name="icon" >
@@ -27,5 +28,32 @@
             </div>
         </form>
     </div>
+
+    <script>
+        const db = new PouchDB('tags');
+
+        document.getElementById('tagForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            
+            const icon = document.getElementById('icon').value;
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+
+            const tag = {
+                _id: new Date().toISOString(), 
+                icon,
+                name,
+                description
+            };
+
+            db.put(tag).then(() => {
+                alert('Tag cadastrada com sucesso!');
+                document.getElementById('tagForm').reset();
+            }).catch(err => {
+                console.error(err);
+                alert('Erro ao cadastrar a tag.');
+            });
+        });
+    </script>
 </body>
 </html>
