@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CadastrosDeMetas</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Cadastro de Metas</h1>
+        <form id="goalForm">
+            <label for="goal">Meta:</label>
+            <input type="text" id="goal" name="goal" required>
+
+            <label for="startDate">Data de Início:</label>
+            <input type="date" id="startDate" name="startDate" required>
+
+            <label for="endDate">Data de Término:</label>
+            <input type="date" id="endDate" name="endDate" required>
+
+            <label for="description">Descrição:</label>
+            <textarea id="description" name="description" rows="4" required></textarea>
+
+            <button type="submit">Cadastrar Meta</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('goalForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            alert('Meta cadastrada com sucesso!');
+            // Aqui você pode adicionar o código para salvar os dados do formulário
+        });
+    </script>
+</body>
+
+</html>
