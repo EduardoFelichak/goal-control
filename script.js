@@ -96,18 +96,25 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 function loadContent(page) {
-    fetch(page)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro ao carregar a página: ' + response.statusText);
-            }
-            return response.text();
-        })
-        .then(data => {
-            document.getElementById('content').innerHTML = data;
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            document.getElementById('content').innerHTML = '<h1>Erro ao carregar a página</h1>';
-        });
+    if (page === 'home') {
+        document.getElementById('content').innerHTML = `
+            <h1>Bem-vindo!</h1>
+            <p>Estamos felizes em tê-lo aqui. Navegue pelo nosso site para saber mais sobre nossos serviços e entre em contato para mais informações.</p>
+        `;
+    } else {
+        fetch(page)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar a página: ' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById('content').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.getElementById('content').innerHTML = '<h1>Erro ao carregar a página</h1>';
+            });
+    }
 }
