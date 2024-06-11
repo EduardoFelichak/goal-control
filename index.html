@@ -5,18 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
     <title>PaginaInicial</title>
 </head>
 
 <body>
     <nav class="navbar">
-        <a href="#home">Cadastro de Usuarios</a>
-        <a href="#sobre">Cadastros de Metas</a>
-        <a href="#servicos">Cadastros de Tags</a>
-        <a href="#contato">Contato</a>
+        <a href="#" onclick="loadContent('cadastrosUsuarios.html')">Cadastros de Usuarios</a>
+        <a href="#" onclick="loadContent('cadastrosMetas.html')">Cadastros de Metas</a>
+        <a href="#" onclick="loadContent('cadastrosTags.html')">Cadastros de Tags</a>
+        <a href="#" onclick="loadContent('contato.html')">Contato</a>
     </nav>
-    <div class="container">
-        <!-- Conteúdo da página aqui -->
+    <div class="container" id="content">
+        <h1>Bem-vindo!</h1>
+        <p>Estamos felizes em tê-lo aqui. Navegue pelo nosso site para saber mais sobre nossos serviços e entre em
+            contato para mais informações.</p>
     </div>
 </body>
 

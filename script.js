@@ -20,8 +20,8 @@ function syncDatabase(dbName) {
     const remoteDB = new PouchDB(`${remoteCouchDBUrl}/${dbName}`);
 
     localDB.sync(remoteDB, {
-        live: true, 
-        retry: true 
+        live: true,
+        retry: true
     }).on('change', function (info) {
         console.log(`sync change on ${dbName}`, info);
     }).on('paused', function (err) {
@@ -43,7 +43,7 @@ function setupFormSubmission(formId, dbName) {
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
-        
+
         const formData = new FormData(form);
         const data = {};
         formData.forEach((value, key) => {
@@ -94,3 +94,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         setupShowButton(button.id, dbName);
     });
 });
+
+function loadContent(page) {
+    fetch(page)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao carregar a página: ' + response.statusText);
+            }
+            return response.text();
+        })
+        .then(data => {
+            document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            document.getElementById('content').innerHTML = '<h1>Erro ao carregar a página</h1>';
+        });
+}
