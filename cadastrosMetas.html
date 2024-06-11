@@ -25,12 +25,23 @@
                 <input type="date" id="endDate" name="endDate" required>
             </div>
             <div class="form-group">
+                <label for="tags">Tags:</label>
+                <select id="tags" name="tags" class="tags" required>
+                    <option value="" disabled selected>Selecione uma tag</option>
+                    <option value="Trabalho">Trabalho</option>
+                    <option value="Estudo">Estudo</option>
+                    <option value="Pessoal">Pessoal</option>
+                    <!-- Adicione mais opções conforme necessário -->
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="description">Descrição:</label>
                 <textarea id="description" name="description" required></textarea>
             </div>
             <div class="form-group">
                 <button type="submit" id="submitBtn">Cadastrar Meta</button>
             </div>
+
         </form>
 
         <h3>Metas Cadastradas</h3>
