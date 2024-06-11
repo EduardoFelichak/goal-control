@@ -3,6 +3,10 @@ body {
     color: #ffffff;
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .container {
@@ -13,6 +17,10 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     background-color: #333;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .form-group {
@@ -81,4 +89,66 @@ body {
 .navbar a:hover {
     background-color: #555;
     border-radius: 5px;
+}
+
+
+/* Estilos da tabela de metas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #333;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1px solid #444;
+    text-align: center;
+    font-size: 16px;
+}
+
+th {
+    background-color: #555;
+    font-weight: bold;
+}
+
+td {
+    background-color: #444;
+}
+
+/* Estilos das células de ação */
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Estilos dos botões de ação */
+.actions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Botão de editar */
+.actions .editBtn {
+    background-color: #ffc107;
+    color: #242424;
+}
+
+.actions .editBtn:hover {
+    background-color: #e0a800;
+}
+
+/* Botão de excluir */
+.actions .deleteBtn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.actions .deleteBtn:hover {
+    background-color: #c82333;
 }

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>CadastrosDeMetas</title>
+    <title>Cadastros De Metas</title>
 </head>
 
 <body>
@@ -29,18 +29,28 @@
                 <textarea id="description" name="description" required></textarea>
             </div>
             <div class="form-group">
-                <button type="submit">Cadastrar Meta</button>
+                <button type="submit" id="submitBtn">Cadastrar Meta</button>
             </div>
         </form>
+
+        <h3>Metas Cadastradas</h3>
+        <table id="goalsTable">
+            <thead>
+                <tr>
+                    <th>Meta</th>
+                    <th>Data de Início</th>
+                    <th>Data de Término</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Metas serão listadas aqui -->
+            </tbody>
+        </table>
     </div>
 
-    <script>
-        document.getElementById('goalForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            alert('Meta cadastrada com sucesso!');
-            // Aqui você pode adicionar o código para salvar os dados do formulário
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 
 </html>
