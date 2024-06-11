@@ -11,7 +11,7 @@ body {
     padding: 20px;
     border: 1px solid #444;
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     background-color: #333;
 }
 
@@ -25,7 +25,8 @@ body {
     font-weight: bold;
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
@@ -60,4 +61,24 @@ body {
 
 ::placeholder {
     color: #bbbbbb;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: #333;
+    border-bottom: 2px solid #444;
+}
+
+.navbar a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    background-color: #555;
+    border-radius: 5px;
 }
