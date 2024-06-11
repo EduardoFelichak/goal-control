@@ -1,4 +1,19 @@
-const remoteCouchDBUrl = 'http://localhost:5984/_utils';
+const remoteCouchDBUrl = 'http://localhost:5984'; // URL correta do CouchDB
+
+async function createDatabaseIfNotExists(dbName) {
+    try {
+        const response = await fetch(`${remoteCouchDBUrl}/${dbName}`, {
+            method: 'PUT'
+        });
+        if (response.status === 201 || response.status === 412) {
+            console.log(`Database ${dbName} exists or created.`);
+        } else {
+            console.error(`Error creating database ${dbName}:`, await response.text());
+        }
+    } catch (error) {
+        console.error('Error connecting to CouchDB:', error);
+    }
+}
 
 function syncDatabase(dbName) {
     const localDB = new PouchDB(dbName);
@@ -64,13 +79,14 @@ function setupShowButton(buttonId, dbName) {
 }
 
 // Inicializa a sincronização e configura os formulários e botões quando o documento estiver carregado
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     const forms = document.querySelectorAll('form[data-db]');
-    forms.forEach(form => {
+    for (let form of forms) {
         const dbName = form.getAttribute('data-db');
+        await createDatabaseIfNotExists(dbName);
         setupFormSubmission(form.id, dbName);
         syncDatabase(dbName);
-    });
+    }
 
     const buttons = document.querySelectorAll('button[data-db]');
     buttons.forEach(button => {
