@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Metas</title>
     <link rel="stylesheet" href="style.css">
-    <title>Cadastros De Metas</title>
 </head>
-
 <body>
     <div class="container">
         <h2>Cadastro de Metas</h2>
-        <form id="goalForm">
+        <form id="goalForm" data-db="goals">
             <div class="form-group">
                 <label for="goal">Meta:</label>
                 <input type="text" id="goal" name="goal" required>
@@ -25,43 +23,17 @@
                 <input type="date" id="endDate" name="endDate" required>
             </div>
             <div class="form-group">
-                <label for="tags">Tags:</label>
-                <select id="tags" name="tags" class="tags" required>
-                    <option value="" disabled selected>Selecione uma tag</option>
-                    <option value="Trabalho">Trabalho</option>
-                    <option value="Estudo">Estudo</option>
-                    <option value="Pessoal">Pessoal</option>
-                    <!-- Adicione mais opções conforme necessário -->
-                </select>
-            </div>
-            <div class="form-group">
                 <label for="description">Descrição:</label>
                 <textarea id="description" name="description" required></textarea>
             </div>
             <div class="form-group">
-                <button type="submit" id="submitBtn">Cadastrar Meta</button>
+                <label for="tag">Tag:</label>
+                <select id="tag" name="tag"></select>
             </div>
-
+            <div class="form-group">
+                <button type="submit">Cadastrar Meta</button>
+            </div>
         </form>
-
-        <h3>Metas Cadastradas</h3>
-        <table id="goalsTable">
-            <thead>
-                <tr>
-                    <th>Meta</th>
-                    <th>Data de Início</th>
-                    <th>Data de Término</th>
-                    <th>Descrição</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Metas serão listadas aqui -->
-            </tbody>
-        </table>
     </div>
-
-    <script src="app.js"></script>
 </body>
-
 </html>

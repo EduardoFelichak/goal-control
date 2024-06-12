@@ -3,10 +3,6 @@ body {
     color: #ffffff;
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
 }
 
 .container {
@@ -17,10 +13,6 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     background-color: #333;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .form-group {
@@ -34,7 +26,8 @@ body {
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
@@ -91,64 +84,28 @@ body {
     border-radius: 5px;
 }
 
-
-/* Estilos da tabela de metas */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: #333;
-}
-
-th,
-td {
-    padding: 10px;
-    border: 1px solid #444;
-    text-align: center;
-    font-size: 16px;
-}
-
-th {
-    background-color: #555;
-    font-weight: bold;
-}
-
-td {
+.record-item {
     background-color: #444;
-}
-
-/* Estilos das células de ação */
-.actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-/* Estilos dos botões de ação */
-.actions button {
-    padding: 5px 10px;
-    border: none;
+    padding: 10px;
+    margin: 10px 0;
     border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
 }
 
-/* Botão de editar */
-.actions .editBtn {
-    background-color: #ffc107;
-    color: #242424;
+.record-item button {
+    margin-left: 10px;
+    background-color: #17a2b8;
 }
 
-.actions .editBtn:hover {
-    background-color: #e0a800;
+.record-item button:hover {
+    background-color: #138496;
 }
 
-/* Botão de excluir */
-.actions .deleteBtn {
+.record-item button:last-child {
     background-color: #dc3545;
-    color: white;
 }
 
-.actions .deleteBtn:hover {
+.record-item button:last-child:hover {
     background-color: #c82333;
 }
