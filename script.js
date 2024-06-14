@@ -73,29 +73,36 @@ function displayGoals() {
     const db = new PouchDB('goals');
     const container = document.getElementById('goalList');
     if (container) {
-        container.innerHTML = '';
+        container.innerHTML = ''; // Limpa o conteúdo existente
 
         db.allDocs({ include_docs: true, descending: true }).then(doc => {
-            doc.rows.forEach(row => {
-                const item = row.doc;
-                const div = document.createElement('div');
-                div.className = 'record-item';
+            if (doc.rows.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.textContent = 'Ainda não foram incluídas metas!';
+                container.appendChild(emptyMessage);
+            } else {
+                doc.rows.forEach(row => {
+                    const item = row.doc;
+                    const div = document.createElement('div');
+                    div.className = 'record-item';
 
-                div.innerHTML = `
-                    <div>
-                        <strong>${item.goal}</strong> - ${item.startDate} to ${item.endDate}
-                        <p>${item.description}</p>
-                        <p>${item.tag}</p>
-                    </div>
-                    <div>
-                        <button onclick='editRecord("goals", "${item._id}")'>Editar</button>
-                        <button onclick='deleteRecord("goals", "${item._id}")'>Deletar</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
+                    div.innerHTML = `
+                        <div>
+                            <strong>${item.goal}</strong> - ${item.startDate} to ${item.endDate}
+                            <p>${item.description}</p>
+                            <p>${item.tag}</p>
+                        </div>
+                        <div>
+                            <button onclick='editRecord("goals", "${item._id}")'>Editar</button>
+                            <button onclick='deleteRecord("goals", "${item._id}")'>Deletar</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
         }).catch(err => {
-            console.error(err);
+            console.error('Erro ao buscar os cadastros:', err);
             alert('Erro ao buscar os cadastros.');
         });
     }
