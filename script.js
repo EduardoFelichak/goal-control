@@ -1,4 +1,4 @@
-const remoteCouchDBUrl = 'http://localhost:5984'; // URL correta do CouchDB
+const remoteCouchDBUrl = 'http://localhost:5984'; 
 
 async function createDatabaseIfNotExists(dbName) {
     try {
@@ -85,7 +85,7 @@ function displayGoals() {
                     <div>
                         <strong>${item.goal}</strong> - ${item.startDate} to ${item.endDate}
                         <p>${item.description}</p>
-                        <p>Tag: ${item.tag}</p>
+                        <p>${item.tag}</p>
                     </div>
                     <div>
                         <button onclick='editRecord("goals", "${item._id}")'>Editar</button>
@@ -138,7 +138,7 @@ function loadTags() {
         db.allDocs({ include_docs: true }).then(doc => {
             doc.rows.forEach(row => {
                 const option = document.createElement('option');
-                option.value = row.doc.name;
+                option.value = `${row.doc.icon} ${row.doc.name}`;
                 option.textContent = `${row.doc.icon} ${row.doc.name}`;
                 tagSelect.appendChild(option);
             });
