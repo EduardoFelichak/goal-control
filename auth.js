@@ -17,15 +17,12 @@ function login() {
     const password = document.getElementById('password').value;
     const db = new PouchDB(dbName);
 
-    db.find({
-        selector: {
-            type: 'user',
-            email: email,
-            senha: password
-        }
-    }).then(result => {
-        if (result.docs.length > 0) {
-            const user = result.docs[0];
+    db.allDocs({ include_docs: true }).then(result => {
+        const user = result.rows.map(row => row.doc).find(doc => 
+            doc.type === 'user' && doc.email === email && doc.senha === password
+        );
+
+        if (user) {
             localStorage.setItem('loggedIn', 'true');
             localStorage.setItem('userId', user._id);
             window.location.href = 'home.html';
