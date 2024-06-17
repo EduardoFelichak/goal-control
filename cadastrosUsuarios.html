@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Usuário</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/pouchdb/dist/pouchdb.min.js"></script>
-    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="container">
         <h2>Cadastro de Usuário</h2>
-        <form id="userForm" data-db="users">
+        <form id="userForm" data-type="user">
             <div class="form-group">
                 <label for="nome">Nome</label>
                 <input type="text" id="nome" name="nome" required>
@@ -49,5 +47,7 @@
             </div>
         </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb/dist/pouchdb.min.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

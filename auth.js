@@ -15,14 +15,16 @@ document.addEventListener('DOMContentLoaded', function() {
 function login() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    console.log(email)
-    console.log(password)
-    const db = new PouchDB('users');
+    const db = new PouchDB(dbName);
 
-    db.allDocs({ include_docs: true }).then(result => {
-        const user = result.rows.find(row => row.doc.email === email && row.doc.senha === password);
-        console.log(user)
-        if (user) {
+    db.find({
+        selector: {
+            type: 'user',
+            email: email,
+            senha: password
+        }
+    }).then(result => {
+        if (result.docs.length > 0) {
             localStorage.setItem('loggedIn', 'true');
             window.location.href = 'home.html';
         } else {

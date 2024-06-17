@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h2>Cadastro de Metas</h2>
-        <form id="goalForm" data-db="goals">
+        <form id="goalForm" data-type="goal">
             <div class="form-group">
                 <label for="goal">Meta:</label>
                 <input type="text" id="goal" name="goal" required>
@@ -35,5 +35,7 @@
             </div>
         </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb/dist/pouchdb.min.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

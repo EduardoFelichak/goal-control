@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h2>Cadastro de Tags</h2>
-        <form id="tagForm" data-db="tags">
+        <form id="tagForm" data-type="tag">
             <div class="form-group">
                 <label for="icon">Ícone</label>
                 <input type="text" id="icon" name="icon">
@@ -27,5 +27,7 @@
             </div>
         </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb/dist/pouchdb.min.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

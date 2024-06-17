@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Login</h1>
+        <h2>Login</h2>
         <form id="loginForm">
             <div class="form-group">
                 <label for="email">Email:</label>
@@ -19,14 +19,11 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <div class="form-group">
-                <button type="button" onclick="login()">Entrar</button>
-                <button type="button" onclick="window.location.href='cadastrosUsuarios.html'">Cadastrar-se</button>
+                <button type="submit">Entrar</button>
             </div>
         </form>
     </div>
-    <!-- Carregar scripts necessários antes do script personalizado -->
     <script src="https://cdn.jsdelivr.net/npm/pouchdb/dist/pouchdb.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find/dist/pouchdb.find.min.js"></script>
-    <script src="auth.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

@@ -1,114 +1,133 @@
-const remoteCouchDBUrl = 'http://localhost:5984'; 
+const remoteCouchDBUrl = 'http://localhost:5984';
+const dbName = 'appdata';
+
+document.addEventListener('DOMContentLoaded', async function () {
+    await createDatabaseIfNotExists(dbName);
+    syncDatabase(dbName);
+    setupFormSubmission('tagForm');
+    setupFormSubmission('goalForm');
+    loadTags();
+});
 
 async function createDatabaseIfNotExists(dbName) {
     try {
-        const response = await fetch(`${remoteCouchDBUrl}/${dbName}`, {
-            method: 'PUT'
+        const checkResponse = await fetch(`${remoteCouchDBUrl}/${dbName}`, {
+            method: 'HEAD',
+            headers: {
+                'Authorization': 'Basic ' + btoa('admin:admin')
+            }
         });
-        if (response.status === 201 || response.status === 412) {
-            console.log(`Database ${dbName} exists or created.`);
+
+        if (checkResponse.ok) {
+            console.log(`Database ${dbName} already exists.`);
+        } else if (checkResponse.status === 404) {
+            const createResponse = await fetch(`${remoteCouchDBUrl}/${dbName}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Basic ' + btoa('admin:admin')
+                }
+            });
+
+            if (createResponse.ok) {
+                console.log(`Database ${dbName} created.`);
+            } else {
+                const error = await createResponse.json();
+                console.error(`Error creating database ${dbName}:`, error);
+            }
         } else {
-            console.error(`Error creating database ${dbName}:`, await response.text());
+            const error = await checkResponse.json();
+            console.error(`Error checking database ${dbName}:`, error);
         }
     } catch (error) {
         console.error('Error connecting to CouchDB:', error);
     }
 }
 
+
 function syncDatabase(dbName) {
     const localDB = new PouchDB(dbName);
     const remoteDB = new PouchDB(`${remoteCouchDBUrl}/${dbName}`, {
-        auth: {
-            username: 'admin', 
-            password: 'admin'
-        }
+        auth: { username: 'admin', password: 'admin' }
     });
-
-    localDB.sync(remoteDB, {
-        live: true,
-        retry: true
-    }).on('change', function (info) {
-        console.log(`sync change on ${dbName}`, info);
-    }).on('paused', function (err) {
-        console.log(`sync paused on ${dbName}`, err);
-    }).on('active', function () {
-        console.log(`sync active on ${dbName}`);
-    }).on('denied', function (err) {
-        console.error(`sync denied on ${dbName}`, err);
-    }).on('complete', function (info) {
-        console.log(`sync complete on ${dbName}`, info);
-    }).on('error', function (err) {
-        console.error(`sync error on ${dbName}`, err);
-    });
+    localDB.sync(remoteDB, { live: true, retry: true })
+        .on('error', err => console.error(`Sync error on ${dbName}`, err));
 }
 
-function setupFormSubmission(formId, dbName) {
+function setupFormSubmission(formId) {
     const form = document.getElementById(formId);
-    const db = new PouchDB(dbName);
+    if (!form) return;
 
-    form.addEventListener('submit', function (event) {
+    form.addEventListener('submit', async function (event) {
         event.preventDefault();
-
-        const formData = new FormData(form);
-        const data = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
-        data._id = formData.get('_id') || new Date().toISOString();
-
-        db.put(data).then(() => {
+        const db = new PouchDB(dbName);
+        const data = { _id: new Date().toISOString(), type: form.getAttribute('data-type') };
+        new FormData(form).forEach((value, key) => { data[key] = value; });
+        try {
+            await db.put(data);
             alert('Cadastro realizado com sucesso!');
             form.reset();
-            if (dbName === 'goals') {
-                displayGoals();
-            }
-        }).catch(err => {
-            console.error(err);
+        } catch (err) {
+            console.error('Erro ao realizar o cadastro:', err);
             alert('Erro ao realizar o cadastro.');
-        });
+        }
     });
 }
 
-function displayGoals() {
-    const db = new PouchDB('goals');
-    const container = document.getElementById('goalList');
-    if (container) {
-        container.innerHTML = ''; // Limpa o conteúdo existente
+function loadTags() {
+    const db = new PouchDB(dbName);
+    const select = document.getElementById('tag');
+    if (!select) return;
 
-        db.allDocs({ include_docs: true, descending: true }).then(doc => {
-            if (doc.rows.length === 0) {
-                const emptyMessage = document.createElement('div');
-                emptyMessage.className = 'empty-message';
-                emptyMessage.textContent = 'Ainda não foram incluídas metas!';
-                container.appendChild(emptyMessage);
-            } else {
-                doc.rows.forEach(row => {
-                    const item = row.doc;
-                    const div = document.createElement('div');
-                    div.className = 'record-item';
-
-                    div.innerHTML = `
-                        <div>
-                            <strong>${item.goal}</strong> - ${item.startDate} to ${item.endDate}
-                            <p>${item.description}</p>
-                            <p>${item.tag}</p>
-                        </div>
-                        <div>
-                            <button onclick='editRecord("goals", "${item._id}")'>Editar</button>
-                            <button onclick='deleteRecord("goals", "${item._id}")'>Deletar</button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
+    db.allDocs({ include_docs: true }).then(result => {
+        result.rows.forEach(row => {
+            if (row.doc.type === 'tag') { // Ensure only tags are added to the select
+                const option = document.createElement('option');
+                option.value = row.doc._id; // Use the document ID as the value
+                option.textContent = `${row.doc.icon} ${row.doc.name}`;
+                select.appendChild(option);
             }
-        }).catch(err => {
-            console.error('Erro ao buscar os cadastros:', err);
-            alert('Erro ao buscar os cadastros.');
         });
-    }
+    }).catch(err => {
+        console.error('Erro ao carregar as tags:', err);
+        alert('Erro ao carregar as tags.');
+    });
 }
 
-function editRecord(dbName, id) {
+function displayGoals(userId) {
+    const db = new PouchDB(dbName);
+    const container = document.getElementById('goalList');
+    if (!container) return;
+
+    db.find({
+        selector: { type: 'goal', userId: userId }
+    }).then(result => {
+        if (result.docs.length === 0) {
+            container.innerHTML = '<div class="empty-message">Ainda não foram incluídas metas!</div>';
+        } else {
+            result.docs.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'record-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.goal}</strong> - ${item.startDate} to ${item.endDate}
+                        <p>${item.description}</p>
+                        <p>${item.tag}</p>
+                    </div>
+                    <div>
+                        <button onclick='editRecord("${item._id}")'>Editar</button>
+                        <button onclick='deleteRecord("${item._id}")'>Deletar</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+    }).catch(err => {
+        console.error('Erro ao buscar os cadastros:', err);
+        alert('Erro ao buscar os cadastros.');
+    });
+}
+
+function editRecord(id) {
     const db = new PouchDB(dbName);
     db.get(id).then(doc => {
         for (let key in doc) {
@@ -116,97 +135,26 @@ function editRecord(dbName, id) {
                 document.getElementById(key).value = doc[key];
             }
         }
-        document.getElementById('_id').value = doc._id;
+        document.getElementById('_id').value = doc._id; // Update form with the _id for update operations
     }).catch(err => {
-        console.error(err);
+        console.error('Erro ao buscar o registro:', err);
         alert('Erro ao buscar o registro.');
     });
 }
-
-function deleteRecord(dbName, id) {
+    
+function deleteRecord(id) {
     const db = new PouchDB(dbName);
     db.get(id).then(doc => {
         return db.remove(doc);
     }).then(() => {
         alert('Registro deletado com sucesso!');
-        if (dbName === 'goals') {
-            displayGoals();
-        }
+        displayGoals(localStorage.getItem('userId'));
     }).catch(err => {
-        console.error(err);
+        console.error('Erro ao deletar o registro:', err);
         alert('Erro ao deletar o registro.');
     });
 }
-
-function loadTags() {
-    const db = new PouchDB('tags');
-    const tagSelect = document.getElementById('tag');
-    if (tagSelect) {
-        db.allDocs({ include_docs: true }).then(doc => {
-            doc.rows.forEach(row => {
-                const option = document.createElement('option');
-                option.value = `${row.doc.icon} ${row.doc.name}`;
-                option.textContent = `${row.doc.icon} ${row.doc.name}`;
-                tagSelect.appendChild(option);
-            });
-        }).catch(err => {
-            console.error(err);
-            alert('Erro ao carregar as tags.');
-        });
-    }
-}
-
-function displayRecords(dbName) {
-    const db = new PouchDB(dbName);
-    const container = document.getElementById(`${dbName}List`);
-    if (container) {
-        container.innerHTML = '';
-
-        db.allDocs({ include_docs: true, descending: true }).then(doc => {
-            doc.rows.forEach(row => {
-                const item = row.doc;
-                const div = document.createElement('div');
-                div.className = 'record-item';
-
-                div.innerHTML = `
-                    <div>
-                        <strong>${item.name}</strong>
-                        <p>${item.description}</p>
-                    </div>
-                    <div>
-                        <button onclick='editRecord("${dbName}", "${item._id}")'>Editar</button>
-                        <button onclick='deleteRecord("${dbName}", "${item._id}")'>Deletar</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }).catch(err => {
-            console.error(err);
-            alert('Erro ao buscar os cadastros.');
-        });
-    }
-}
-
-// Inicializa a sincronização e configura os formulários e botões quando o documento estiver carregado
-document.addEventListener('DOMContentLoaded', async function () {
-    const forms = document.querySelectorAll('form[data-db]');
-    for (let form of forms) {
-        const dbName = form.getAttribute('data-db');
-        await createDatabaseIfNotExists(dbName);
-        setupFormSubmission(form.id, dbName);
-        syncDatabase(dbName);
-    }
-
-    const buttons = document.querySelectorAll('button[data-db]');
-    buttons.forEach(button => {
-        const dbName = button.getAttribute('data-db');
-        setupShowButton(button.id, dbName);
-    });
-
-    loadTags();
-    displayGoals();
-});
-
+    
 function loadContent(page) {
     fetch(page)
         .then(response => {
@@ -217,21 +165,16 @@ function loadContent(page) {
         })
         .then(data => {
             document.getElementById('content').innerHTML = data;
-
-            // Configurar novamente os formulários e carregar tags se necessário
-            const forms = document.querySelectorAll('form[data-db]');
-            forms.forEach(form => {
-                const dbName = form.getAttribute('data-db');
-                setupFormSubmission(form.id, dbName);
+            document.querySelectorAll('form[data-db]').forEach(form => {
+                setupFormSubmission(form.id);
                 syncDatabase(dbName);
             });
-
             if (page === 'cadastrosMetas.html') {
                 loadTags();
             }
         })
-        .catch(error => {
-            console.error('Erro:', error);
-            document.getElementById('content').innerHTML = '<h1>Erro ao carregar a página</h1>';
-        });
+    .catch(error => {
+        console.error('Erro:', error);
+        document.getElementById('content').innerHTML = '<h1>Erro ao carregar a página</h1>';
+    });
 }
