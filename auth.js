@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault();
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
             login();
         });
     }
@@ -25,7 +25,9 @@ function login() {
         }
     }).then(result => {
         if (result.docs.length > 0) {
+            const user = result.docs[0];
             localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('userId', user._id);
             window.location.href = 'home.html';
         } else {
             alert("Credenciais inválidas!");
@@ -38,5 +40,6 @@ function login() {
 
 function logout() {
     localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userId');
     window.location.href = 'login.html';
 }

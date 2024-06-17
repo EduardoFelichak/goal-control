@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     setupFormSubmission('tagForm');
     setupFormSubmission('goalForm');
     loadTags();
+    displayGoals();
 });
 
 async function createDatabaseIfNotExists(dbName) {
@@ -43,7 +44,6 @@ async function createDatabaseIfNotExists(dbName) {
     }
 }
 
-
 function syncDatabase(dbName) {
     const localDB = new PouchDB(dbName);
     const remoteDB = new PouchDB(`${remoteCouchDBUrl}/${dbName}`, {
@@ -60,7 +60,8 @@ function setupFormSubmission(formId) {
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
         const db = new PouchDB(dbName);
-        const data = { _id: new Date().toISOString(), type: form.getAttribute('data-type') };
+        const userId = localStorage.getItem('userId');
+        const data = { _id: new Date().toISOString(), type: form.getAttribute('data-type'), userId: userId };
         new FormData(form).forEach((value, key) => { data[key] = value; });
         try {
             await db.put(data);
@@ -80,9 +81,9 @@ function loadTags() {
 
     db.allDocs({ include_docs: true }).then(result => {
         result.rows.forEach(row => {
-            if (row.doc.type === 'tag') { // Ensure only tags are added to the select
+            if (row.doc.type === 'tag') {
                 const option = document.createElement('option');
-                option.value = row.doc._id; // Use the document ID as the value
+                option.value = row.doc._id;
                 option.textContent = `${row.doc.icon} ${row.doc.name}`;
                 select.appendChild(option);
             }
@@ -93,14 +94,16 @@ function loadTags() {
     });
 }
 
-function displayGoals(userId) {
+function displayGoals() {
     const db = new PouchDB(dbName);
     const container = document.getElementById('goalList');
-    if (!container) return;
+    const userId = localStorage.getItem('userId');
+    if (!container || !userId) return;
 
     db.find({
         selector: { type: 'goal', userId: userId }
     }).then(result => {
+        container.innerHTML = '';
         if (result.docs.length === 0) {
             container.innerHTML = '<div class="empty-message">Ainda não foram incluídas metas!</div>';
         } else {
@@ -135,26 +138,26 @@ function editRecord(id) {
                 document.getElementById(key).value = doc[key];
             }
         }
-        document.getElementById('_id').value = doc._id; // Update form with the _id for update operations
+        document.getElementById('_id').value = doc._id;
     }).catch(err => {
         console.error('Erro ao buscar o registro:', err);
         alert('Erro ao buscar o registro.');
     });
 }
-    
+
 function deleteRecord(id) {
     const db = new PouchDB(dbName);
     db.get(id).then(doc => {
         return db.remove(doc);
     }).then(() => {
         alert('Registro deletado com sucesso!');
-        displayGoals(localStorage.getItem('userId'));
+        displayGoals();
     }).catch(err => {
         console.error('Erro ao deletar o registro:', err);
         alert('Erro ao deletar o registro.');
     });
 }
-    
+
 function loadContent(page) {
     fetch(page)
         .then(response => {
