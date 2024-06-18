@@ -6,15 +6,13 @@
     <title>Home</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/pouchdb/dist/pouchdb.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find/dist/pouchdb.find.min.js"></script>
-    <script defer src="script.js"></script>
-    <script defer src="auth.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
     <nav class="navbar">
         <a href="home.html">Home</a>
-        <a href="#" onclick="loadContent('cadastrosMetas.html')">Cadastros de Metas</a>
-        <a href="#" onclick="loadContent('cadastrosTags.html')">Cadastros de Tags</a>
+        <a href="cadastrosMetas.html">Cadastros de Metas</a>
+        <a href="cadastrosTags.html">Cadastros de Tags</a>
         <button onclick="logout()">Sair</button>
     </nav>
     <div class="container" id="content">
@@ -23,5 +21,71 @@
         <h2>Metas</h2>
         <div id="goalList"></div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            displayGoals();
+
+            function displayGoals() {
+                const db = new PouchDB('appdata');
+                const container = document.getElementById('goalList');
+                const userId = localStorage.getItem('userId');
+                if (!container || !userId) return;
+
+                db.allDocs({ include_docs: true }).then(result => {
+                    const goals = result.rows.map(row => row.doc).filter(doc => doc.type === 'goal' && doc.userId === userId);
+                    container.innerHTML = '';
+                    if (goals.length === 0) {
+                        container.innerHTML = '<div class="empty-message">Ainda não foram incluídas metas!</div>';
+                    } else {
+                        goals.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'record-item';
+                            const startDateFormatted = formatDate(item.startDate);
+                            const endDateFormatted = formatDate(item.endDate);
+                            div.innerHTML = `
+                                <div>
+                                    <strong>Meta: ${item.goal}</strong> | Período de ${startDateFormatted} a ${endDateFormatted}
+                                    <p>${item.description}</p>
+                                    <p>${item.tag}</p>
+                                </div>
+                                <div>
+                                    <button onclick='deleteRecord("${item._id}")'>Deletar</button>
+                                </div>
+                            `;
+                            container.appendChild(div);
+                        });
+                    }
+                }).catch(err => {
+                    console.error('Erro ao buscar os cadastros:', err);
+                    alert('Erro ao buscar os cadastros.');
+                });
+            }
+
+            function formatDate(dateStr) {
+                const [year, month, day] = dateStr.split('-');
+                return `${day}/${month}/${year}`;
+            }
+
+            function deleteRecord(id) {
+                const db = new PouchDB('appdata');
+                db.get(id).then(doc => {
+                    return db.remove(doc);
+                }).then(() => {
+                    alert('Registro deletado com sucesso!');
+                    displayGoals();
+                }).catch(err => {
+                    console.error('Erro ao deletar o registro:', err);
+                    alert('Erro ao deletar o registro.');
+                });
+            }
+            window.deleteRecord = deleteRecord;
+        });
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('userId');
+            window.location.href = 'login.html';
+        }
+    </script>
 </body>
 </html>

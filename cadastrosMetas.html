@@ -33,9 +33,36 @@
             <div class="form-group">
                 <button type="submit">Cadastrar Meta</button>
             </div>
+            <input type="hidden" id="_id" name="_id">
+            <input type="hidden" id="_rev" name="_rev">
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/pouchdb/dist/pouchdb.min.js"></script>
-    <script src="script.js" defer></script>
+    <script src="cadastros/metas.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                loadGoal(id);
+            }
+
+            async function loadGoal(id) {
+                const db = new PouchDB('appdata');
+                try {
+                    const doc = await db.get(id);
+                    document.getElementById('goal').value = doc.goal;
+                    document.getElementById('startDate').value = doc.startDate;
+                    document.getElementById('endDate').value = doc.endDate;
+                    document.getElementById('description').value = doc.description;
+                    document.getElementById('tag').value = doc.tag;
+                    document.getElementById('_id').value = doc._id;
+                    document.getElementById('_rev').value = doc._rev;
+                } catch (err) {
+                    console.error('Erro ao carregar a meta:', err);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
